@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 #Morgan Butryn
-#2021-8-13
+#created 2021-8-13
+#last edit 2021-8-20
 
 import random
 import tkinter as tk
@@ -22,8 +23,16 @@ class RollScreen(Screen):
         self.lbl_dicepool = tk.Label(self, text="Dice pool (# of dice)", font=("20"))
         self.lbl_dicepool.grid(row = 0, sticky = "news")
 
-        self.ent_dicepool = tk.Entry(self)
-        self.ent_dicepool.grid(row = 1, sticky = "news")
+        self.spn_dicepool = tk.Spinbox(self, from_ = 1, to = 99, width = 3)
+        self.spn_dicepool.grid(row = 1, sticky = "nw")
+
+
+        self.lbl_diff = tk.Label(self, text="Difficulty (# to beat)", font=("20"))
+        self.lbl_diff.grid(row = 2, sticky = "news")
+
+        self.spn_diff = tk.Spinbox(self, from_ = 2, to = 10, width = 3)
+        self.spn_diff.grid(row = 3, sticky = "nw")
+
 
 #main
 if __name__ == "__main__":
@@ -37,7 +46,8 @@ if __name__ == "__main__":
 
     #list of screens in program
     screens = [RollScreen()]
-    
+
+    #applies grid to all screens
     for i in range(len(screens)):
         screens[i].grid(row = 0, column = 0, sticky = "news")
         
