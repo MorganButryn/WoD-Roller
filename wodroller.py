@@ -63,7 +63,7 @@ class RollScreen(Screen):
     def roll(self):
         result = []
         successes = 0
-        is_botch = False
+        no_botch = False
         for i in range(int(self.spn_dicepool.get())):
             result.append(d10())
             
@@ -79,12 +79,15 @@ class RollScreen(Screen):
                     
             elif result[i] >= int(self.spn_diff.get()):
                 successes += 1
+                no_botch = True
             elif result[i] == 1:
                 successes -= 1
-                
+
         self.txt_roll['state'] = "normal"
         self.txt_roll.delete('1.0', tk.END)
-        self.txt_roll.insert('1.0', str(result)+"\n"+str(successes))
+        self.txt_roll.insert('1.0', str(result)+"\n"+str(successes)+" successes")
+        if not(no_botch) and successes < 0:
+            self.txt_roll.insert('3.0', "\nBotch!")
         self.txt_roll['state'] = "disabled"
         return
         
