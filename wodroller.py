@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 #Morgan Butryn
 #created 2021-8-13
-#last edit 2021-8-20
+#last edit 2021-9-6
 
 import random
 import tkinter as tk
@@ -35,41 +35,70 @@ class RollScreen(Screen):
         for i in range(4):
             self.spn_diff.invoke("buttonup")
 
+        self.bool_is_spec = tk.IntVar()
+        
+        self.chk_specialty = tk.Checkbutton(self, text = "Specialty applies", variable = self.bool_is_spec)
+        self.chk_specialty.grid(row = 4, sticky = "nw")
+
         self.lbl_specialty = tk.Label(self, text="Specialty rules", font=("20"))
-        self.lbl_specialty.grid(row = 4, sticky = "nw")
+        self.lbl_specialty.grid(row = 5, sticky = "nw")
 
-        self.var_specialty = tk.IntVar()
+        self.var_spec_select = tk.IntVar()
 
-        self.rad_revised = tk.Radiobutton(self, text="Revised", variable = self.var_specialty, value = 1)
-        self.rad_revised.grid(row = 5, sticky = "nw")
+        self.rad_revised = tk.Radiobutton(self, text="10s explode (Revised)", variable = self.var_spec_select, value = 1)
+        self.rad_revised.grid(row = 6, sticky = "nw")
         self.rad_revised.invoke()
 
-        self.rad_20th = tk.Radiobutton(self, text="20th Anniversary edition", variable = self.var_specialty, value = 2)
-        self.rad_20th.grid(row = 6, sticky = "nw")
+        self.rad_20th = tk.Radiobutton(self, text="10s count as 2 successes (20th Anniversary edition)", variable = self.var_spec_select, value = 2)
+        self.rad_20th.grid(row = 7, sticky = "nw")
 
-        self.btn_roll = tk.Button(self, text="ROLL!")
-        self.btn_roll.grid(row = 7, sticky = "news")
+        self.btn_roll = tk.Button(self, text="ROLL!", command = self.roll)
+        self.btn_roll.grid(row = 8, sticky = "news")
 
-        self.txt_roll = tk.Text(self, height = 4, width = 18, state = "disabled",
-                                command = self.roll(int(self.spn_dicepool.get()), int(self.spn_diff.get()), self.var_specialty))
-        self.txt_roll.grid(row = 8, sticky = "news")
+        self.txt_roll = tk.Text(self, height = 4, width = 18, state = "disabled")
+        self.txt_roll.grid(row = 9, sticky = "news")
 
-    def d10(self):
-        die = random.randint(1, 10)
-        return die
     
-    def roll(self,pool, diff, specialty):
+    
+    def roll(self):
         result = []
-        for i in range(pool):
-            result.append(self.d10())
+        successes = 0
+        is_botch = False
+        for i in range(int(self.spn_dicepool.get())):
+            result.append(d10())
             
+            if result[-1] == 10 and self.bool_is_spec.get() == 1:
+                if self.var_spec_select.get() == 1:
+                    while result[-1] == 10:
+                        successes += 1
+                        result.append(d10())
+                        if result[-1] >= int(self.spn_diff.get()):
+                            successes += 1
+                if self.var_spec_select.get() == 2:
+                    successes += 2
+                    
+            elif result[i] >= int(self.spn_diff.get()):
+                successes += 1
+            elif result[i] == 1:
+                successes -= 1
+                
+        self.txt_roll['state'] = "normal"
+        self.txt_roll.delete('1.0', tk.END)
+        self.txt_roll.insert('1.0', str(result)+"\n"+str(successes))
+        self.txt_roll['state'] = "disabled"
+        return
+        
+
+def d10():
+        die = random.randint(1, 10)
+        return die            
         
 #main
 if __name__ == "__main__":
     root = tk.Tk()
 
     #screen size
-    root.geometry("175x300")
+    root.geometry("300x300")
     
     #screen title
     root.title("WoD Roller")
